@@ -1,0 +1,19 @@
+export interface ControlsModel {
+    id?: number | undefined
+    isDay?: boolean | undefined
+    date?: Date | undefined
+    requests?: number | undefined
+    current_address?: number | undefined
+    geocodify?: number | undefined
+    total_geocodify?: number | undefined
+    geoapi_key?: string | undefined
+    geoapi_id?: string | undefined
+    isGeocoding?: boolean | undefined,
+    isRequests?: boolean | undefined,
+    isAddress?: boolean | undefined,
+    isDate?: boolean | undefined,
+    initial_date?: Date | undefined,
+    total_requests?: number | undefined,
+    errors?: number | undefined,
+    total_errors?: number | undefined
+}

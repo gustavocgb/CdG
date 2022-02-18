@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Controls {
+  id              Int       @id @default(autoincrement())
+  isDay           Boolean?
+  date            DateTime? @db.Timestamptz(6)
+  requests        Int?      @default(0)
+  current_address Int
+  geocodify       Int?      @default(0)
+  total_geocodify Int?      @default(0)
+  isGeocoding     Boolean?
+  isRequests      Boolean?
+  isAddress       Boolean?
+  isDate          Boolean?
+  geoapi_id       String
+  geoapi_key      String?
+  initial_date    DateTime? @db.Timestamptz(6)
+  total_requests  Int?      @default(0)
+  errors          Int?      @default(0)
+  total_errors    Int?      @default(0)
+  Request         Request   @relation(fields: [current_address], references: [request_id], onDelete: NoAction, onUpdate: NoAction, map: "current_request_id")
+  Geoapi          Geoapi    @relation(fields: [geoapi_id], references: [geoapi_id], onDelete: NoAction, onUpdate: NoAction, map: "geoapi")
+}
+
+model Geoapi {
+  maxRequestPerDay    Int?
+  maxRequestPerSecond Int?
+  geoapi_id           String     @id @unique(map: "provider_name")
+  Controls            Controls[]
+  Response            Response[]
+  Search              Search[]
+}
+
+model Request {
+  request_id   Int        @id(map: "RequestTeste_pkey") @default(autoincrement())
+  full_address String?
+  public_place String?
+  district     String?
+  city         String?
+  state        String?
+  zip_code     String?
+  unit         String?
+  number       String?
+  Controls     Controls[]
+  Response     Response[]
+  Search       Search[]
+}
+
+model Response {
+  geolocation_id Int     @id @default(autoincrement())
+  full_address   String?
+  public_place   String?
+  district       String?
+  zip_code       String?
+  city           String?
+  state          String?
+  country        String?
+  accuracy       Float?
+  latitude       Float?
+  longitude      Float?
+  place_type     String?
+  longWestBBox   Float?
+  latNorthBBox   Float?
+  longEastBBox   Float?
+  latSouthBBox   Float?
+  request_id     Int
+  number         String?
+  geoapi_id      String
+  Geoapi         Geoapi  @relation(fields: [geoapi_id], references: [geoapi_id], onDelete: NoAction, onUpdate: NoAction, map: "geoapi")
+  Request        Request @relation(fields: [request_id], references: [request_id], onDelete: NoAction, onUpdate: NoAction, map: "request_id")
+}
+
+model Search {
+  date               DateTime? @db.Timestamptz(6)
+  error              String?
+  generated_response Boolean?
+  request_id         Int
+  geoapi_id          String
+  search_id          Int       @id @default(autoincrement())
+  Geoapi             Geoapi    @relation(fields: [geoapi_id], references: [geoapi_id], onDelete: NoAction, onUpdate: NoAction, map: "geoapi")
+  Request            Request   @relation(fields: [request_id], references: [request_id], onDelete: NoAction, onUpdate: NoAction, map: "request_id")
+}
